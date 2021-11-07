@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"time"
-	"../part1_1/BLC"
+	"../part1/BLC"
 )
 
 func main(){
