@@ -1,7 +1,7 @@
 package main
 
 import (
-	"Blockchainer/part2/BLC"
+	"Blockchainer/part2-ProofofWork/BLC"
 	"fmt"
 	"time"
 )
