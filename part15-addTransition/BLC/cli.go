@@ -30,9 +30,28 @@ func (cli *CLI) validateArgs() {
 	}
 }
 
+func (cli *CLI) sendToken() {
+	//1. 10->mobuyi
+	//2. 3->zhangjie
+	// (1) 新建一个交易
+	tx1 := NewUTXOTransaction("maobuyi", "zhangjie", 3, cli.BC)
+	tx2 := NewUTXOTransaction("maobuyi", "feifei", 2, cli.BC)
+
+	cli.BC.MineBlock([]*Transaction{tx1, tx2})
+
+}
+
 func (cli *CLI) addblock(data string) {
 	// cli.BC.AddBlock(data)
-	fmt.Println("新增一个区块....")
+
+	// fmt.Println("FindUnspentTransactions")
+
+	// fmt.Println(cli.BC.FindUnspentTransations("maobuyi"))
+	// count, outputMap := cli.BC.FindSpendableOutputs("maobuyi", 2)
+
+	// fmt.Println(count)
+	// fmt.Println(outputMap)
+	cli.sendToken()
 }
 
 func (cli *CLI) printChain() {
@@ -53,6 +72,9 @@ func (cli *CLI) printChain() {
 			fmt.Printf("Hash：%x \n", block.Hash)
 			fmt.Printf("Nonce：%d \n", block.Nonce)
 
+			for _, tx := range block.Transaction {
+				fmt.Println(tx)
+			}
 			fmt.Println()
 			return nil
 		})
