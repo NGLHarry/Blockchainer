@@ -59,7 +59,7 @@ func (w *Wallet) GetAddress() []byte {
 	version_ripemd160Hash := append([]byte{version}, ripemd160Hash...)
 
 	// 两次的256 hash
-	checkSumBytes := CheckSum(version_ripemd160Hash)
+	checkSumBytes := CheckSum(ripemd160Hash)
 
 	//25
 	bytes := append(version_ripemd160Hash, checkSumBytes...)

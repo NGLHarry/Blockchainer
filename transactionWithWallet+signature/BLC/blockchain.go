@@ -416,8 +416,13 @@ func (bc *BlockChain) MineNewBlock(from, to, amount []string) {
 		txs = append(txs, tx)
 	}
 
+	// 奖励
+	tx := NewCoinbaseTransaction(from[0])
+	txs = append(txs, tx)
+
 	// 1.通过相关算法建立Transaction数组
 	var block *Block
+
 	bc.DB.View(func(tx *bolt.Tx) error {
 		b := tx.Bucket([]byte(blockTableName))
 		if b != nil {
@@ -427,6 +432,14 @@ func (bc *BlockChain) MineNewBlock(from, to, amount []string) {
 		}
 		return nil
 	})
+
+	// 在建立新区块之前要对txs进行签名验证
+	for _, tx := range txs {
+
+		if bc.VerifyTransaction(tx) != true {
+			log.Panic("ERROR: Invalid transaction")
+		}
+	}
 
 	// 2.建立新的区块
 	block = NewBlock(txs, block.Height+1, block.Hash)
@@ -552,4 +565,20 @@ func BlockchainObject() *BlockChain {
 		log.Panic(err)
 	}
 	return &BlockChain{tip, db}
+}
+
+// 验证数字签名
+func (bc *BlockChain) VerifyTransaction(tx *Transaction) bool {
+
+	prevTXs := make(map[string]Transaction)
+
+	for _, vin := range tx.Vins {
+		prevTX, err := bc.FindTransaction(vin.TxHash)
+		if err != nil {
+			log.Panic(err)
+		}
+		prevTXs[hex.EncodeToString(prevTX.TxHash)] = prevTX
+	}
+
+	return tx.Verify(prevTXs)
 }
